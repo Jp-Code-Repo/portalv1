@@ -1,0 +1,39 @@
+name: portal
+
+services:
+  portal-service:
+    container_name: portal-service
+
+    build:
+      context: ./services/portal-service
+      dockerfile: Dockerfile
+
+    working_dir: /var/www/html
+
+    volumes:
+      - ./services/portal-service:/var/www/html
+
+    networks:
+      - portal-network
+
+  nginx:
+    image: nginx:stable-alpine
+
+    container_name: portal-nginx
+
+    depends_on:
+      - portal-service
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./services/portal-service:/var/www/html
+      - ./infrastructure/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+    networks:
+      - portal-network
+
+networks:
+  portal-network:
+    driver: bridge

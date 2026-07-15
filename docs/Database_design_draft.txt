@@ -1,0 +1,284 @@
+
+1. Centralized Authentication
+    - Single Login (SSO-like experience)
+
+
+                Portal (Identity Provider)
+                            │
+            ┌─────────────────┼─────────────────┐
+            │                 │                 │
+            ▼                 ▼                 ▼
+
+    Other microservices receives user identity from Portal
+
+    Registrar API     Clinic API      Library API
+            │                 │                 │
+            └─────────────────┼─────────────────┘
+                            │
+                        Trust Portal User
+
+    The Portal owns:
+
+        Login
+        Passwords
+        Roles
+        Permissions
+        User Profile
+        Authentication tokens
+
+    Every other service trusts the Portal and never stores passwords.
+
+2. Separate Identity from Profile
+
+    users
+    -----
+    id
+    username
+    email
+    password
+    status
+
+    ↓
+
+    user_profiles
+    --------------
+    user_id
+    first_name
+    middle_name
+    last_name
+    birthdate
+    phone
+    photo
+
+    Authentication changes very little.
+
+    Profiles change often.
+
+    They're different concerns.
+
+3. Use UUIDs
+    - Laravel's ULID
+
+    Safer across microservices.
+    Easier data merging.
+    No ID collisions.
+
+4. Roles are many-to-many
+
+    users
+    roles
+    user_roles
+
+
+    A user might later be:
+
+    Teacher
+    Adviser
+    Registrar
+    HR Staff
+
+    all at the same time.
+
+5. Departments are separate
+
+    ex.
+    departments
+    -----------
+    id
+    name
+    code
+
+    users
+    ------
+    department_id
+
+    Don't store department = "IT" as text.
+
+6. Separate Accounts from People
+
+        users
+        │
+        ▼
+        people
+        │
+        ├── person_roles
+        │        │
+        │        ├── Employee
+        │        ├── Faculty
+        │        ├── Student
+        │        └── Alumni
+        │
+        ├── employee_profiles
+        ├── student_profiles
+        ├── faculty_profiles
+        └── alumni_profiles
+
+    Users
+    - Authentication only.
+
+    People
+    - General information shared by every module.
+
+    Roles
+
+        | id | name          |
+        | -- | ------------- |
+        | 1  | Student       |
+        | 2  | Faculty       |
+        | 3  | Employee      |
+        | 4  | Alumni        |
+        | 5  | Parent        |
+        | 6  | Administrator |
+
+        These rarely change.
+    
+    Person_roles
+
+        This table answers:
+        "What hats is Juan wearing?"
+
+        | person_id | role_id |
+        | --------- | ------- |
+        | 01P456... | 1       |
+        | 01P456... | 2       |
+        | 01P456... | 3       |
+        | 01P456... | 4       |
+
+        Juan has four roles.
+        Tomorrow he becomes Department Head?
+        Just insert another row.
+
+
+    Employee_profiles
+
+        Only employee information.
+
+        person_id	employee_no	    department_id	position	            employment_status	date_hired
+        01P456...	EMP-2024-001    IT	            System Administrator	Permanent	        2024-06-01
+
+        No birthday.
+
+        No address.
+
+
+    faculty_profiles
+
+        Faculty-specific data.
+
+        person_id	faculty_no	academic_rank	employment_type
+        01P456...	FAC-0102	Instructor I	Part-Time
+
+        student_profiles
+
+        Student-only information.
+
+        person_id	student_no	course	year_level	admission_year
+        01P456...	2025-00124	Master in Information Technology	2	2025
+
+        Employee number doesn't belong here.
+
+    alumni_profiles
+
+        person_id	alumni_no	graduation_year	degree
+        01P456...	AL-2017-512	2017	        BS Computer Science
+
+    departments
+
+        id	code	name
+        1	IT	    Information Technology
+        2	REG	    Registrar
+        3	LIB	    Library
+
+7. Don't Store Permissions in Users
+    Bad:
+
+    users
+    -----
+    can_edit = true
+    can_delete = false
+
+
+    Better:
+
+    permissions
+    roles
+    role_permissions
+    user_roles
+
+
+Sample Schema:
+
+    users
+    ---------
+        id
+        username
+        email
+        password
+        status
+        last_login
+        email_verified_at
+        remember_token
+        created_at
+        updated_at
+
+    profiles
+    ---------
+        user_id
+        employee_no
+        student_no
+        first_name
+        middle_name
+        last_name
+        suffix
+        birthdate
+        gender
+        photo
+        phone
+        address
+
+    departments
+    ---------
+        id
+        code
+        name
+
+    roles
+    ---------
+        id
+        name
+        description
+
+    permissions
+    ---------
+        id
+        name
+
+    user_roles
+    ---------
+        user_id
+        role_id
+
+    role_permissions
+    ---------
+        role_id
+        permission_id
+
+    sessions
+    ---------
+        id
+        user_id
+        ip
+        browser
+        device
+        expires_at
+
+    audit_logs
+    ---------
+        id
+        user_id
+        action
+        table_name
+        record_id
+        old_values
+        new_values
+        created_at
