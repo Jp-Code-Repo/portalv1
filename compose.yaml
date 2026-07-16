@@ -6,7 +6,7 @@ services:
 
     build:
       context: ./services/portal-service
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile.dev
 
     working_dir: /var/www/html
 
