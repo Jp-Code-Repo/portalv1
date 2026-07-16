@@ -30,13 +30,16 @@ COPY composer.json composer.lock ./
 
 RUN composer install \
     --no-interaction \
-    --prefer-dist
+    --prefer-dist \
+    --no-scripts
 
 COPY . .
 
-RUN chown -R www-data:www-data \
-    storage \
-    bootstrap/cache
+RUN mkdir -p bootstrap/cache storage/logs && \
+    chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
+
+RUN composer run-script post-autoload-dump
 
 RUN chmod +x docker/entrypoint.sh
 
