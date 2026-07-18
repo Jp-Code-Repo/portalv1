@@ -19,27 +19,8 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('suffix')->nullable();
 
-            $table->date('birth_date');
-
-            $table->enum('sex', [
-                'male',
-                'female',
-            ]);
-
-            $table->enum('civil_status', [
-                'single',
-                'married',
-                'widowed',
-                'separated',
-                'divorced',
-            ]);
-
-            $table->foreignId('nationality_id')
-                ->constrained()
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
-
             $table->softDeletes();
+
             $table->timestamps();
         });
     }
