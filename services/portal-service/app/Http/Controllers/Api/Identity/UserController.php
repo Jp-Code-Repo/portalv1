@@ -19,7 +19,9 @@ class UserController extends Controller
     {
         $start = microtime(true);
 
-        $user = $this->userService->createUser($request->toDto());
+        $user = $this->userService->createUser(
+            CreateUserData::fromRequest($request)
+        );
 
         \Log::info('Controller elapsed', [
             'elapsed_ms' => round((microtime(true) - $start) * 1000, 2),
