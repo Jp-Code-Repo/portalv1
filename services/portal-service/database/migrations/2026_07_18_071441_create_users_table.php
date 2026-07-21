@@ -26,6 +26,7 @@ return new class extends Migration
             'pending',
             'active',
             'inactive',
+            'suspended',
             'locked',
         ])->default('pending');
 
@@ -34,6 +35,7 @@ return new class extends Migration
 
         $table->rememberToken();
 
+        $table->softDeletes();
         $table->timestamps();
     });;
     }
