@@ -7,6 +7,8 @@ use App\Data\Identity\CreateUserData;
 use App\Http\Requests\StoreUserRequest;
 use App\Services\Identity\UserService;
 use Illuminate\Http\JsonResponse;
+use App\Data\Identity\UpdateUserData;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -31,5 +33,35 @@ class UserController extends Controller
             'message' => 'User created successfully',
             'data' => $user,
         ], 201);
+    }
+
+    public function show(string $id): JsonResponse
+    {
+        $user = $this->userService->findUserById($id);
+
+        return response()->json([
+            'data' => $user,
+        ]);
+    }
+
+    public function index(): JsonResponse
+    {
+        $users = $this->userService->findAllUsers();
+
+        return response()->json([
+            'data' => $users,
+        ]);
+    }
+
+    public function update(UpdateUserRequest $request, string $id): JsonResponse
+    {
+        $user = $this->userService->updateUser(
+            $id,
+            UpdateUserData::from($request->validated())
+        );
+
+        return response()->json([
+            'data' => $user,
+        ]);
     }
 }
