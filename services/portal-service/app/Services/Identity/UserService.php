@@ -51,11 +51,7 @@ class UserService
             'user_id' => $id,
         ]);
 
-        $user = $this->userRepository->findById($id);
-
-        if (! $user) {
-            throw new ModelNotFoundException('User not found.');
-        }
+       $user = $this->userRepository->getById($id);
 
         Log::info('User retrieval completed.', [
             'user_id' => $id,
@@ -92,5 +88,61 @@ class UserService
         ]);
 
         return $user;
+    }
+
+    public function deleteUser(string $id): void
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = $this->userRepository->getById($id);
+
+            $user->person()->delete();
+            $user->delete();
+
+            DB::commit();
+
+            Log::info('User deleted successfully.', [
+                'user_id' => $user->id,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Failed to delete user.', [
+                'user_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
+    }
+
+    public function restoreUser(string $id): User
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = $this->userRepository->getByIdWithTrashed($id);
+
+            $user->restore();
+            $user->person()->restore();
+
+            DB::commit();
+
+            Log::info('User restored successfully.', [
+                'user_id' => $user->id,
+            ]);
+
+            return $user->fresh()->load('person');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Failed to restore user.', [
+                'user_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
     }
 }

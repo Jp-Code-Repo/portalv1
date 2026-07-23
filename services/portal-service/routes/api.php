@@ -4,25 +4,13 @@ use App\Http\Controllers\Api\Identity\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Authenticated User
-|--------------------------------------------------------------------------
-|
-| Laravel default route. We'll revisit this once the authentication
-| foundation is implemented.
-|
-*/
+// Authenticated user route
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-/*
-|--------------------------------------------------------------------------
-| Users
-|--------------------------------------------------------------------------
-*/
+// User routes
 
 Route::prefix('users')
     ->controller(UserController::class)
@@ -32,4 +20,5 @@ Route::prefix('users')
         Route::get('/{id}', 'show');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
+        Route::post('/{id}/restore', 'restore');
     });

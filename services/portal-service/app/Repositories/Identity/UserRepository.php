@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Models\Person;
 use App\Models\User;
 use App\Data\Identity\UpdateUserData;
+use Illuminate\Support\Facades\Hash;
 
 class UserRepository
 {
@@ -28,7 +29,7 @@ class UserRepository
     }
 
     public function findById(string $id): ?User
-    {
+    {   // nullable
         return User::with('person')->find($id);
     }
 
@@ -41,25 +42,38 @@ class UserRepository
 
     public function update(string $id, UpdateUserData $data): User
     {
-        $user = User::with('person')->findOrFail($id);
+        $user = $this->getById($id);
 
         $user->update([
             'email' => $data->email,
-            'username' => $data->username,
-            'is_active' => $data->is_active,
+            'password' => Hash::make($data->password),
         ]);
 
         $user->person->update([
-            'first_name'   => $data->first_name,
-            'middle_name'  => $data->middle_name,
-            'last_name'    => $data->last_name,
-            'suffix'       => $data->suffix,
-            'birth_date'   => $data->birth_date,
-            'sex'          => $data->sex,
-            'civil_status' => $data->civil_status,
-            'nationality_id' => $data->nationality_id,
+            'first_name'  => $data->firstName,
+            'middle_name' => $data->middleName,
+            'last_name'   => $data->lastName,
+            'suffix'      => $data->suffix,
         ]);
 
         return $user->fresh()->load('person');
     }
+
+    public function getById(string $id): User
+    {   // required (findOrFail)
+        return User::with('person')->findOrFail($id);
+    }
+
+    public function delete(User $user): void
+    {
+        $user->delete();
+    }
+
+    public function getByIdWithTrashed(string $id): User
+    {
+        return User::withTrashed()
+            ->with('person')
+            ->findOrFail($id);
+    }
+
 }

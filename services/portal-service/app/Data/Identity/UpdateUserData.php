@@ -2,7 +2,6 @@
 
 namespace App\Data\Identity;
 
-use App\Http\Requests\StoreUserRequest;
 
 class UpdateUserData
 {
@@ -15,19 +14,31 @@ class UpdateUserData
         public readonly string $password,
     ) {}
 
-    public static function fromRequest(StoreUserRequest $request): self
+    // public static function fromRequest(UpdateUserRequest $request): self
+    // {
+    //     return new self(
+    //         firstName: $request->string('first_name')->toString(),
+    //         middleName: $request->filled('middle_name')
+    //             ? $request->string('middle_name')->toString()
+    //             : null,
+    //         lastName: $request->string('last_name')->toString(),
+    //         suffix: $request->filled('suffix')
+    //             ? $request->string('suffix')->toString()
+    //             : null,
+    //         email: $request->string('email')->toString(),
+    //         password: $request->string('password')->toString(),
+    //     );
+    // }
+
+    public static function from(array $data): self
     {
         return new self(
-            firstName: $request->string('first_name')->toString(),
-            middleName: $request->filled('middle_name')
-                ? $request->string('middle_name')->toString()
-                : null,
-            lastName: $request->string('last_name')->toString(),
-            suffix: $request->filled('suffix')
-                ? $request->string('suffix')->toString()
-                : null,
-            email: $request->string('email')->toString(),
-            password: $request->string('password')->toString(),
+            firstName: $data['first_name'],
+            middleName: $data['middle_name'] ?? null,
+            lastName: $data['last_name'],
+            suffix: $data['suffix'] ?? null,
+            email: $data['email'],
+            password: $data['password'],
         );
     }
 }

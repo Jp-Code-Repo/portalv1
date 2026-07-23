@@ -64,4 +64,25 @@ class UserController extends Controller
             'data' => $user,
         ]);
     }
+
+    public function destroy(string $id): JsonResponse
+    {
+        $this->userService->deleteUser($id);
+
+        return response()->json([
+            'message' => 'User deleted successfully.',
+        ]);
+    }
+
+    public function restore(string $id): JsonResponse
+    {
+        $user = $this->userService->restoreUser($id);
+
+        return response()->json([
+            'message' => 'User restored successfully.',
+            'data' => $user,
+        ]);
+    }
+
+
 }
