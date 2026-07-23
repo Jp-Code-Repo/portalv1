@@ -1,0 +1,227 @@
+The User aggregate was our proving ground. We made a lot of decisions that are no longer just ideas, they're verified conventions. If we don't document them now, we'll end up rediscovering them during Departments, Employees, Roles, and the rest of the Identity Foundation.
+
+I'd make these three documents "living documents" that evolve with Portal.
+
+1. BACKEND_ARCHITECTURE_GUIDE.md
+
+Purpose
+
+This becomes the engineering handbook.
+
+It answers:
+
+"How do we build backend features in Portal?"
+
+Suggested Contents
+# Portal Backend Architecture Guide
+
+1. Architecture Overview
+    - Identity First Philosophy
+    - Layered Architecture
+
+2. Request Lifecycle
+    - Client
+    - Route
+    - Controller
+    - Request
+    - Service
+    - DTO
+    - Repository
+    - Database
+    - Response
+
+3. Layer Responsibilities
+    - Controller
+    - Request
+    - DTO
+    - Service
+    - Repository
+    - Model
+
+4. Repository Conventions
+    find*
+    get*
+    create()
+    update()
+    delete()
+
+5. Service Conventions
+
+6. DTO Conventions
+
+7. Transactions
+
+8. Logging
+
+9. Error Handling Philosophy
+
+10. Folder Structure
+
+11. Coding Standards
+
+12. Future Architecture
+    - API Resources
+    - Events
+    - Queues
+    - Spatie Data
+
+
+2. API_DESIGN_STANDARDS.md
+
+Purpose
+
+Defines how Portal APIs are written.
+
+Not implementation.
+
+API contract.
+
+Suggested Contents
+# Portal API Design Standards
+
+1. REST Principles
+
+2. Resource Naming
+
+3. CRUD Endpoints
+
+4. Action Endpoints
+
+POST /users/{id}/restore
+POST /users/{id}/lock
+
+5. HTTP Status Codes
+
+200
+201
+204
+400
+401
+403
+404
+409
+422
+500
+
+6. Request Format
+
+7. Response Format
+
+8. Error Response Format
+
+9. Pagination
+
+10. Filtering
+
+11. Sorting
+
+12. Versioning Strategy
+
+13. Authentication
+
+14. Authorization
+
+15. Future API Standards
+
+This becomes the contract frontend developers use.
+
+3. ARCHITECTURE_DECISION_RECORD.md
+
+This may become the most valuable document.
+
+Every important architectural decision goes here.
+
+No discussions.
+
+Only final approved decisions.
+
+Example:
+
+ADR-001
+Portal is Identity Platform
+
+Status:
+Accepted
+
+Reason:
+...
+
+Consequences:
+...
+
+Then:
+
+ADR-002
+Users and People are Separate Entities
+ADR-003
+One Person = One User Account
+ADR-004
+Repository Naming Convention
+
+find*
+get*
+ADR-005
+DTO Factory Convention
+
+DTO::from(array)
+ADR-006
+Identity Soft Delete Policy
+ADR-007
+Resource Action Convention
+
+POST /users/{id}/restore
+ADR-008
+Request Lifecycle
+
+and so on.
+
+I would also add one more document
+
+This one wasn't in the original list, but I genuinely think it belongs.
+
+IMPLEMENTATION_PLAYBOOK.md
+
+This documents how we implement new aggregates.
+
+Exactly the workflow we've developed together.
+
+For example:
+
+New Aggregate Checklist
+
+□ Migration
+□ Model
+□ DTO
+□ Request
+□ Repository
+□ Service
+□ Controller
+□ Routes
+□ API Test
+□ Verification
+□ Documentation
+
+Every future aggregate follows the same playbook.
+
+It removes guesswork and ensures consistency across the project.
+
+My Recommendation for the Project Structure
+docs/
+
+├── architecture/
+│   ├── BACKEND_ARCHITECTURE_GUIDE.md
+│   ├── API_DESIGN_STANDARDS.md
+│   ├── ARCHITECTURE_DECISION_RECORD.md
+│   └── IMPLEMENTATION_PLAYBOOK.md
+│
+├── database/
+│
+├── frontend/
+│
+├── roadmap/
+│
+└── modules/
+
+I actually like this structure because it cleanly separates how the system is built (architecture) from what the system does (modules) and where it's going (roadmap).
+
+One more recommendation: let's treat these as versioned documents. Give each one a version (v1.0, v1.1, etc.) and a change log. That way, as Portal evolves and we adopt things like Spatie Data, API Resources, or event-driven patterns, the documentation evolves with the architecture instead of becoming stale.
